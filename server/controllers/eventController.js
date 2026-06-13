@@ -1,5 +1,7 @@
 const Event = require('../models/Event');
 
+console.log("Model Collection:", Event.collection.name);
+
 exports.getEvents = async (req, res) => {
     try {
         const filters = {};

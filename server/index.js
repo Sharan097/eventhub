@@ -23,14 +23,20 @@ app.use('/api/bookings', bookingRoutes);
 
 
 // Connect to MongoDB
+// mongoose.connect(process.env.MONGO_URI)
+// .then(() => {
+//     console.log('MongoDB connected');
+// })
+// .catch((err) => {
+//     console.log(err)
+// });
+
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {
     console.log('MongoDB connected');
+    console.log('Database:', mongoose.connection.name);
 })
-.catch((err) => {
-    console.log(err)
-});
-
+.catch(console.error);
 
 
 const PORT = process.env.PORT || 5000;
