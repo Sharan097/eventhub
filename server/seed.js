@@ -140,9 +140,23 @@ const seedDatabase = async () => {
                     paymentStatus = 'paid';
                 }
 
+                // bookingsData.push({
+                //     userId: user._id,
+                //     eventId: event._id,
+                //     status: status,
+                //     paymentStatus: paymentStatus,
+                //     amount: event.ticketPrice
+                // });
+
+
                 bookingsData.push({
                     userId: user._id,
                     eventId: event._id,
+
+                    stripeSessionId: `seed_${new mongoose.Types.ObjectId()}`,
+
+                    paymentMethod: "seed",
+
                     status: status,
                     paymentStatus: paymentStatus,
                     amount: event.ticketPrice
