@@ -256,6 +256,12 @@
 
 
 
+
+
+
+
+
+
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../utils/axios';
@@ -491,33 +497,33 @@ const AdminDashboard = () => {
                                         ) : null} */}
 
                                         {/* Action buttons for admin */}
-{booking.status === 'pending' ? (
-    <div className="flex flex-wrap gap-2 mt-2">
-        {/* If Stripe already paid, show a different primary action */}
-        {booking.paymentStatus === 'paid' ? (
-            <button onClick={() => handleConfirmBooking(booking._id, 'paid')} className="flex-1 min-w-[120px] bg-green-600 text-white hover:bg-green-700 font-bold py-2.5 px-3 rounded-lg shadow-sm transition">
-                ✓ Confirm Paid Booking
-            </button>
-        ) : (
-            <>
-                <button onClick={() => handleConfirmBooking(booking._id, 'paid')} className="flex-1 min-w-[120px] bg-green-50 text-green-700 hover:bg-green-600 hover:text-white border border-green-200 text-xs font-bold py-2.5 px-3 rounded-lg shadow-sm transition">
-                    ✓ Approve as Paid
-                </button>
-                <button onClick={() => handleConfirmBooking(booking._id, 'not_paid')} className="flex-1 min-w-[120px] bg-gray-50 text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-200 text-xs font-bold py-2.5 px-3 rounded-lg shadow-sm transition">
-                    ✓ Approve Undecided
-                </button>
-            </>
-        )}
-        <button onClick={() => handleCancelBooking(booking._id)} className="w-[80px] bg-red-50 text-red-600 hover:bg-red-500 hover:text-white border border-red-200 text-xs font-bold py-2.5 px-3 rounded-lg transition">
-            ✕ Reject
-        </button>
-    </div>
-) : (
-    // If it's no longer pending, show the static status
-    <div className={`mt-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold border w-full justify-center ${booking.status === 'confirmed' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
-        {booking.status === 'confirmed' ? '✓ Booking Finalized' : '✕ Booking Cancelled'}
-    </div>
-)}
+                                        {booking.status === 'pending' ? (
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                {/* If Stripe already paid, show a different primary action */}
+                                                {booking.paymentStatus === 'paid' ? (
+                                                    <button onClick={() => handleConfirmBooking(booking._id, 'paid')} className="flex-1 min-w-[120px] bg-green-600 text-white hover:bg-green-700 font-bold py-2.5 px-3 rounded-lg shadow-sm transition">
+                                                        ✓ Confirm Paid Booking
+                                                    </button>
+                                                ) : (
+                                                    <>
+                                                        <button onClick={() => handleConfirmBooking(booking._id, 'paid')} className="flex-1 min-w-[120px] bg-green-50 text-green-700 hover:bg-green-600 hover:text-white border border-green-200 text-xs font-bold py-2.5 px-3 rounded-lg shadow-sm transition">
+                                                            ✓ Approve as Paid
+                                                        </button>
+                                                        <button onClick={() => handleConfirmBooking(booking._id, 'not_paid')} className="flex-1 min-w-[120px] bg-gray-50 text-gray-700 hover:bg-gray-800 hover:text-white border border-gray-200 text-xs font-bold py-2.5 px-3 rounded-lg shadow-sm transition">
+                                                            ✓ Approve Undecided
+                                                        </button>
+                                                    </>
+                                                )}
+                                                <button onClick={() => handleCancelBooking(booking._id)} className="w-[80px] bg-red-50 text-red-600 hover:bg-red-500 hover:text-white border border-red-200 text-xs font-bold py-2.5 px-3 rounded-lg transition">
+                                                    ✕ Reject
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            // If it's no longer pending, show the static status
+                                            <div className={`mt-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold border w-full justify-center ${booking.status === 'confirmed' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                                                {booking.status === 'confirmed' ? '✓ Booking Finalized' : '✕ Booking Cancelled'}
+                                            </div>
+                                        )}
                                     </li>
                                 ))
                             }
