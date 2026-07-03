@@ -216,50 +216,101 @@ const EventDetail = () => {
         fetchEvent();
     }, [id]);
 
-    const handleBooking = async () => {
-        if (!user) {
-            navigate('/login');
-            return;
-        }
-        setBookingLoading(true);
-        setError('');
-        setSuccessMsg('');
+    // const handleBooking = async () => {
+    //     if (!user) {
+    //         navigate('/login');
+    //         return;
+    //     }
+    //     setBookingLoading(true);
+    //     setError('');
+    //     setSuccessMsg('');
 
-        try {
-            if (!showOTP) {
-                // Step 1: Request OTP
-                await api.post('/bookings/send-otp');
-                setShowOTP(true);
-                setSuccessMsg('OTP sent to your email. Please verify to confirm booking.');
+    //     try {
+    //         if (!showOTP) {
+    //             // Step 1: Request OTP
+    //             await api.post('/bookings/send-otp');
+    //             setShowOTP(true);
+    //             setSuccessMsg('OTP sent to your email. Please verify to confirm booking.');
+    //         } else {
+    //             // Step 2: Branch Logic Based on Price
+    //             if (event.ticketPrice === 0) {
+    //                 // FLOW A: Free Event (Manual Admin Approval Workflow)
+    //                 await api.post('/bookings', { eventId: event._id, otp });
+    //                 setSuccessMsg('Booking requested! Awaiting admin confirmation.');
+    //                 setShowOTP(false);
+    //                 setEvent({ ...event, availableSeats: event.availableSeats - 1 });
+    //             } else {
+    //                 // FLOW B: Paid Event (Stripe Workflow)
+    //                 // Note: Ensure your backend has a route to just verify OTP without creating a booking, 
+    //                 // or validate it during the checkout session creation.
+    //                 await api.post('/bookings/verify-otp', { email: user.email, otp }); 
+                    
+    //                 const { data } = await api.post('/payments/create-checkout-session', { eventId: event._id });
+                    
+    //                 if (data.url) {
+    //                     window.location.href = data.url; // Redirect to Stripe
+    //                 } else {
+    //                     throw new Error("Failed to initialize payment gateway.");
+    //                 }
+    //             }
+    //         }
+    //     } catch (err) {
+    //         setError(err.response?.data?.message || 'Verification or booking failed');
+    //     } finally {
+    //         setBookingLoading(false);
+    //     }
+    // };
+
+
+
+    const handleBooking = async () => {
+    if (!user) {
+        navigate('/login');
+        return;
+    }
+    setBookingLoading(true);
+    setError('');
+    setSuccessMsg('');
+
+    try {
+        if (!showOTP) {
+            // Step 1: Request OTP
+            await api.post('/bookings/send-otp');
+            setShowOTP(true);
+            setSuccessMsg('OTP sent to your email. Please verify to confirm booking.');
+        } else {
+            // Step 2: Branch Logic Based on Price
+            if (event.ticketPrice === 0) {
+                // FLOW A: Free Event (Manual Admin Approval Workflow)
+                await api.post('/bookings', { eventId: event._id, otp });
+                setSuccessMsg('Booking requested! Awaiting admin confirmation.');
+                setShowOTP(false);
+                setEvent({ ...event, availableSeats: event.availableSeats - 1 });
             } else {
-                // Step 2: Branch Logic Based on Price
-                if (event.ticketPrice === 0) {
-                    // FLOW A: Free Event (Manual Admin Approval Workflow)
-                    await api.post('/bookings', { eventId: event._id, otp });
-                    setSuccessMsg('Booking requested! Awaiting admin confirmation.');
-                    setShowOTP(false);
-                    setEvent({ ...event, availableSeats: event.availableSeats - 1 });
+                // FLOW B: Paid Event (Stripe Workflow)
+                // FIXED: Only send otp as the backend matches email using the auth token middleware
+                await api.post('/bookings/verify-otp', { otp }); 
+                
+                // Step 3: Hit your payment route configuration on Render
+                const { data } = await api.post('/payments/create-checkout-session', { eventId: event._id });
+                
+                if (data && data.url) {
+                    window.location.href = data.url; // Safely Redirect to Stripe Checkout
                 } else {
-                    // FLOW B: Paid Event (Stripe Workflow)
-                    // Note: Ensure your backend has a route to just verify OTP without creating a booking, 
-                    // or validate it during the checkout session creation.
-                    await api.post('/bookings/verify-otp', { email: user.email, otp }); 
-                    
-                    const { data } = await api.post('/payments/create-checkout-session', { eventId: event._id });
-                    
-                    if (data.url) {
-                        window.location.href = data.url; // Redirect to Stripe
-                    } else {
-                        throw new Error("Failed to initialize payment gateway.");
-                    }
+                    throw new Error("Payment gateway URL not found in server response.");
                 }
             }
-        } catch (err) {
-            setError(err.response?.data?.message || 'Verification or booking failed');
-        } finally {
-            setBookingLoading(false);
         }
-    };
+    } catch (err) {
+        console.error("Booking error details:", err);
+        setError(err.response?.data?.message || err.message || 'Verification or booking failed');
+    } finally {
+        setBookingLoading(false);
+    }
+};
+
+
+
 
     if (loading) return <div className="text-center py-20 text-xl font-semibold">Loading...</div>;
     if (error && !event) return <div className="text-center py-20 text-xl text-red-500">{error || 'Event not found'}</div>;
