@@ -10,7 +10,11 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+    // Add these timeout settings:
+    connectionTimeout: 10000, // Give up trying to connect after 10 seconds
+    greetingTimeout: 10000,   // Give up if the SMTP server doesn't respond in 10s
+    socketTimeout: 10000
 });
 
 const sendBookingEmail = async (userEmail, userName, eventTitle) => {
